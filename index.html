@@ -1,0 +1,133 @@
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuizoBabcia - Start</title>
+  <style>
+    /* Reset i podstawowe style */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(45deg, #ffffff, #eaeaea, #f7f7f7);
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Napis i obrazek w rogu */
+    .corner {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .corner .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* Kontener strony startowej */
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    /* Zielony przycisk Start */
+    #startBtn {
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    #startBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 200, 83, 0.5);
+    }
+    /* Modal z wyborem kategorii */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 300px;
+    }
+    .modal-content h2 {
+      margin-bottom: 20px;
+    }
+    .modal-content button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50px;
+      background-color: #00c853;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .modal-content button:hover {
+      background-color: #009624;
+    }
+  </style>
+</head>
+<body>
+  <!-- Napis z logo -->
+  <div class="corner">
+    <img src="background_bg11.png" alt="Logo" class="logo">
+    <div class="gradient-text">QuizoBabcia</div>
+  </div>
+
+  <div class="container">
+    <button id="startBtn">Start</button>
+  </div>
+
+  <!-- Modal wyboru kategorii -->
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <h2>Wybierz kategorię</h2>
+      <button onclick="location.href='quiz_kulinaria.html'">Kulinarne</button>
+      <button onclick="location.href='quiz_senior.html'">Senior</button>
+      <button onclick="location.href='quiz_przydatne.html'">Przydatne</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("startBtn").addEventListener("click", function(){
+      document.getElementById("categoryModal").style.display = "flex";
+    });
+  </script>
+</body>
+</html>

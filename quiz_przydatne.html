@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Przydatne - QuizoBabcia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .corner {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .corner .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .next-btn, .end-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .next-btn:hover, .end-btn:hover {
+      background-color: #009624;
+    }
+    .hidden {
+      display: none;
+    }
+    .review-option {
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f4f4f4;
+    }
+    .correct {
+      background-color: #00c853;
+      color: #fff;
+    }
+    .incorrect {
+      background-color: #f44336;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="corner">
+    <img src="background_bg11.png" alt="Logo" class="logo">
+    <div class="gradient-text">QuizoBabcia</div>
+  </div>
+
+  <div class="quiz-container">
+    <div id="question" class="question">Pobieranie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="nextBtn" class="next-btn hidden">Następne pytanie</button>
+    <button id="endBtn" class="end-btn hidden">Zakończ Quiz</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "Jak przetłumaczyć 'dziękuję' na niemiecki?", options: ["Danke", "Bitte", "Entschuldigung", "Hallo"], answer: "Danke" },
+      { question: "Jak powiedzieć 'proszę' po niemiecku?", options: ["Bitte", "Tschüss", "Guten Tag", "Ja"], answer: "Bitte" },
+      { question: "Jak przetłumaczyć 'dobry wieczór' na niemiecki?", options: ["Guten Morgen", "Guten Abend", "Gute Nacht", "Hallo"], answer: "Guten Abend" },
+      { question: "Jak powiedzieć 'do widzenia' po niemiecku?", options: ["Tschüss", "Auf Wiedersehen", "Guten Morgen", "Hallo"], answer: "Tschüss" },
+      { question: "Jak przetłumaczyć 'miłość' na niemiecki?", options: ["Liebe", "Freundschaft", "Hass", "Angst"], answer: "Liebe" },
+      { question: "Jak powiedzieć 'przepraszam' po niemiecku?", options: ["Entschuldigung", "Danke", "Bitte", "Hallo"], answer: "Entschuldigung" },
+      { question: "Jak przetłumaczyć 'dzień dobry' na niemiecki?", options: ["Guten Morgen", "Guten Tag", "Gute Nacht", "Tschüss"], answer: "Guten Morgen" },
+      { question: "Jak powiedzieć 'tak' po niemiecku?", options: ["Ja", "Nein", "Vielleicht", "Bitte"], answer: "Ja" },
+      { question: "Jak przetłumaczyć 'nie' na niemiecki?", options: ["Ja", "Nein", "Vielleicht", "Bitte"], answer: "Nein" },
+      { question: "Jak przetłumaczyć 'woda' na niemiecki?", options: ["Wasser", "Milch", "Bier", "Kaffee"], answer: "Wasser" },
+      // Dodaj więcej pytań
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const endBtn = document.getElementById("endBtn");
+    const selectedAnswers = [];
+
+    function shuffleQuestions() {
+      return questions.sort(() => Math.random() - 0.5).slice(0, 15);
+    }
+
+    const selectedQuestions = shuffleQuestions();
+
+    function loadQuestion() {
+      const q = selectedQuestions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+      nextBtn.classList.add("hidden");
+      endBtn.classList.add("hidden");
+    }
+
+    function selectOption(btn, correctAnswer) {
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+      if (btn.textContent === correctAnswer) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+      selectedAnswers.push({ question: selectedQuestions[currentQuestion], selected: btn.textContent });
+      nextBtn.classList.remove("hidden");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < selectedQuestions.length) {
+        loadQuestion();
+      } else {
+        questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${selectedQuestions.length}`;
+        optionsEl.innerHTML = "";
+        nextBtn.classList.add("hidden");
+        endBtn.classList.remove("hidden");
+      }
+    });
+
+    endBtn.addEventListener("click", () => {
+      questionEl.textContent = "Przegląd odpowiedzi";
+      optionsEl.innerHTML = "";
+
+      selectedAnswers.forEach((answer, index) => {
+        const div = document.createElement("div");
+        div.className = "review-option";
+        div.textContent = `${answer.question.question}: `;
+
+        const userAnswer = document.createElement("span");
+        userAnswer.textContent = `Twoja odpowiedź: ${answer.selected}`;
+        const correctAnswer = document.createElement("span");
+        correctAnswer.textContent = ` | Poprawna odpowiedź: ${answer.question.answer}`;
+
+        if (answer.selected === answer.question.answer) {
+          div.classList.add("correct");
+        } else {
+          div.classList.add("incorrect");
+        }
+
+        div.appendChild(userAnswer);
+        div.appendChild(correctAnswer);
+        optionsEl.appendChild(div);
+      });
+
+      endBtn.textContent = "Powrót do strony głównej";
+      endBtn.onclick = () => {
+        window.location.href = "index.html"; // Zmieniony na stronę główną
+      };
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
