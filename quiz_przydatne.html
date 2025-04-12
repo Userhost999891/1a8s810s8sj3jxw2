@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Przydatne - QuizoBabcia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .next-btn, .end-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .next-btn:hover, .end-btn:hover {
+      background-color: #009624;
+    }
+    .hidden {
+      display: none;
+    }
+    .review-option {
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f4f4f4;
+    }
+    .correct {
+      background-color: #00c853;
+      color: #fff;
+    }
+    .incorrect {
+      background-color: #f44336;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="gradient-text" style="text-align: center; margin-top: 10px;">QuizoBabcia</div>
+
+  <div class="quiz-container">
+    <div id="question" class="question">Pobieranie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="nextBtn" class="next-btn hidden">Następne pytanie</button>
+    <button id="endBtn" class="end-btn hidden">Zakończ Quiz</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "Jak przetłumaczyć 'dziękuję' na niemiecki?", options: ["Danke", "Bitte", "Entschuldigung", "Hallo"], answer: "Danke" },
+      { question: "Jak powiedzieć 'proszę' po niemiecku?", options: ["Bitte", "Tschüss", "Guten Tag", "Ja"], answer: "Bitte" },
+      { question: "Jak przetłumaczyć 'dobry wieczór' na niemiecki?", options: ["Guten Morgen", "Guten Abend", "Gute Nacht", "Hallo"], answer: "Guten Abend" },
+      { question: "Jak powiedzieć 'do widzenia' po niemiecku?", options: ["Tschüss", "Auf Wiedersehen", "Guten Morgen", "Hallo"], answer: "Tschüss" },
+      { question: "Jak przetłumaczyć 'miłość' na niemiecki?", options: ["Liebe", "Freundschaft", "Hass", "Angst"], answer: "Liebe" },
+      { question: "Jak powiedzieć 'przepraszam' po niemiecku?", options: ["Entschuldigung", "Danke", "Bitte", "Hallo"], answer: "Entschuldigung" },
+      { question: "Jak przetłumaczyć 'dzień dobry' na niemiecki?", options: ["Guten Morgen", "Guten Tag", "Gute Nacht", "Tschüss"], answer: "Guten Morgen" },
+      { question: "Jak powiedzieć 'tak' po niemiecku?", options: ["Ja", "Nein", "Vielleicht", "Bitte"], answer: "Ja" },
+      { question: "Jak przetłumaczyć 'nie' na niemiecki?", options: ["Ja", "Nein", "Vielleicht", "Bitte"], answer: "Nein" },
+      { question: "Jak przetłumaczyć 'woda' na niemiecki?", options: ["Wasser", "Milch", "Bier", "Kaffee"], answer: "Wasser" }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const endBtn = document.getElementById("endBtn");
+
+    // Funkcja losująca odpowiedzi
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function loadQuestion() {
+      nextBtn.classList.add("hidden");
+      endBtn.classList.add("hidden");
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffleOptions([...q.options]);
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, correctAnswer) {
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+      if (btn.textContent === correctAnswer) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+      nextBtn.classList.remove("hidden");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${questions.length}`;
+        optionsEl.innerHTML = "";
+        nextBtn.classList.add("hidden");
+        endBtn.classList.remove("hidden");
+      }
+    });
+
+    endBtn.addEventListener("click", () => {
+      if (score === 10) {
+        const fireStreak = parseInt(localStorage.getItem("fireStreak") || "0") + 1;
+        localStorage.setItem("fireStreak", fireStreak);
+      } else {
+        localStorage.setItem("fireStreak", "0");
+      }
+      window.location.href = "index.html";
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
