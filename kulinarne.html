@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Kulinarne - QuizoBabcia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .end-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .end-btn:hover {
+      background-color: #009624;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="gradient-text" style="text-align: center; margin-top: 10px;">QuizoBabcia</div>
+
+  <div class="quiz-container">
+    <div id="question" class="question">Pobieranie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="endBtn" class="end-btn hidden">Zakończ Quiz</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "Jak przetłumaczyć 'mąka' na niemiecki?", options: ["Hefe", "Mehl", "Teig", "Zucker"], answer: "Mehl" },
+      { question: "Co oznacza 'Rindfleisch'?", options: ["Mięso wieprzowe", "Wołowina", "Cielęcina", "Kurczak"], answer: "Wołowina" },
+      { question: "Jak powiedzieć 'kuchenka mikrofalowa' po niemiecku?", options: ["Kochfeld", "Ofen", "Mikrowelle", "Herd"], answer: "Mikrowelle" },
+      { question: "Co znaczy 'Gewürze'?", options: ["Sosy", "Mięsa", "Warzywa", "Przyprawy"], answer: "Przyprawy" },
+      { question: "Jak przetłumaczyć 'śmietana' na niemiecki?", options: ["Quark", "Joghurt", "Sahne", "Milch"], answer: "Sahne" },
+      { question: "Co oznacza 'Backpulver'?", options: ["Sól", "Proszek do pieczenia", "Mąka", "Papryka"], answer: "Proszek do pieczenia" },
+      { question: "Jak powiedzieć 'patelnia' po niemiecku?", options: ["Topf", "Pfanne", "Teller", "Löffel"], answer: "Pfanne" },
+      { question: "Co oznacza 'Schnittlauch'?", options: ["Czosnek", "Szczypiorek", "Por", "Pietruszka"], answer: "Szczypiorek" },
+      { question: "Jak przetłumaczyć 'ciasto' (np. szarlotka) na niemiecki?", options: ["Torte", "Keks", "Kuchen", "Gebäck"], answer: "Kuchen" },
+      { question: "Co znaczy 'Knoblauch'?", options: ["Cebula", "Imbir", "Czosnek", "Pieprz"], answer: "Czosnek" }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const endBtn = document.getElementById("endBtn");
+
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function loadQuestion() {
+      if (currentQuestion >= questions.length) {
+        showEndScreen();
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffleOptions([...q.options]);
+
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, correctAnswer) {
+      const isCorrect = btn.textContent === correctAnswer;
+      if (isCorrect) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+
+      setTimeout(() => {
+        currentQuestion++;
+        loadQuestion();
+      }, 1000);
+    }
+
+    function showEndScreen() {
+      questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${questions.length}`;
+      optionsEl.innerHTML = "";
+      endBtn.classList.remove("hidden");
+
+      if (score === 10) {
+        const fireStreak = parseInt(localStorage.getItem("fireStreak") || "0") + 1;
+        localStorage.setItem("fireStreak", fireStreak);
+      } else {
+        localStorage.setItem("fireStreak", "0");
+      }
+    }
+
+    endBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>

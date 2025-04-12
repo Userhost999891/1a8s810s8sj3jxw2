@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Przydatne (Trudniejsze) - QuizoBabcia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .end-btn {
+      margin-top: 30px;
+      padding: 12px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .end-btn:hover {
+      background-color: #009624;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="gradient-text" style="text-align: center; margin-top: 10px;">QuizoBabcia</div>
+
+  <div class="quiz-container">
+    <div id="question" class="question">Ładowanie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="endBtn" class="end-btn hidden">Idź na stronę główną</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "Jak przetłumaczyć 'uprzejmie' na niemiecki?", options: ["Höflich", "Schnell", "Laut", "Langsam"], answer: "Höflich" },
+      { question: "Jak powiedzieć 'Czy możesz mi pomóc?' po niemiecku?", options: ["Kannst du mir helfen?", "Wie heißt du?", "Ich habe Hunger", "Wo bist du?"], answer: "Kannst du mir helfen?" },
+      { question: "Jak przetłumaczyć 'czekam na ciebie' na niemiecki?", options: ["Ich warte auf dich", "Ich sehe dich", "Ich brauche dich", "Ich gehe mit dir"], answer: "Ich warte auf dich" },
+      { question: "Jak powiedzieć 'Muszę iść' po niemiecku?", options: ["Ich muss gehen", "Ich will essen", "Ich bin müde", "Ich mag dich"], answer: "Ich muss gehen" },
+      { question: "Jak przetłumaczyć 'jestem zmęczony' na niemiecki?", options: ["Ich bin müde", "Ich bin glücklich", "Ich bin stark", "Ich bin hungrig"], answer: "Ich bin müde" },
+      { question: "Jak powiedzieć 'Nie rozumiem' po niemiecku?", options: ["Ich verstehe nicht", "Ich weiß nicht", "Ich kenne dich", "Ich spreche gut"], answer: "Ich verstehe nicht" },
+      { question: "Jak przetłumaczyć 'To jest trudne' na niemiecki?", options: ["Das ist schwierig", "Das ist schön", "Das ist lecker", "Das ist alt"], answer: "Das ist schwierig" },
+      { question: "Jak powiedzieć 'Lubię to' po niemiecku?", options: ["Ich mag das", "Ich sehe das", "Ich nehme das", "Ich höre das"], answer: "Ich mag das" },
+      { question: "Jak przetłumaczyć 'Potrzebuję pomocy' na niemiecki?", options: ["Ich brauche Hilfe", "Ich will schlafen", "Ich muss gehen", "Ich habe Hunger"], answer: "Ich brauche Hilfe" },
+      { question: "Jak powiedzieć 'To jest możliwe' po niemiecku?", options: ["Das ist möglich", "Das ist fertig", "Das ist schlimm", "Das ist genug"], answer: "Das ist möglich" }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const endBtn = document.getElementById("endBtn");
+
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffleOptions([...q.options]);
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, correctAnswer) {
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+
+      if (btn.textContent === correctAnswer) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          loadQuestion();
+        } else {
+          questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${questions.length}`;
+          optionsEl.innerHTML = "";
+          endBtn.classList.remove("hidden");
+        }
+      }, 1000);
+    }
+
+    loadQuestion();
+
+    endBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

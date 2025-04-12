@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Senior - QuizoBabcia</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .home-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .home-btn:hover {
+      background-color: #009624;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="gradient-text">QuizoBabcia</div>
+  <div class="quiz-container">
+    <div id="question" class="question">Pobieranie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="homeBtn" class="home-btn hidden">Powrót na stronę główną</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Jak przetłumaczyć 'Jestem emerytem' na niemiecki?",
+        options: ["Ich bin Rentner", "Ich bin Lehrer", "Ich bin Schüler", "Ich bin Fahrer"],
+        answer: "Ich bin Rentner"
+      },
+      {
+        question: "Co oznacza niemieckie wyrażenie 'Es tut mir leid'?",
+        options: ["Przepraszam", "Dziękuję", "Proszę", "Do widzenia"],
+        answer: "Przepraszam"
+      },
+      {
+        question: "Jak powiedzieć 'Mam 65 lat' po niemiecku?",
+        options: ["Ich bin fünfundsechzig Jahre alt", "Ich bin sechzig Jahre alt", "Ich habe fünfundsechzig Jahre", "Ich lebe fünfundsechzig Jahre"],
+        answer: "Ich bin fünfundsechzig Jahre alt"
+      },
+      {
+        question: "Jak przetłumaczyć 'Czy mówisz po niemiecku?'",
+        options: ["Sprichst du Deutsch?", "Bist du Deutsch?", "Kennst du Deutsch?", "Hörst du Deutsch?"],
+        answer: "Sprichst du Deutsch?"
+      },
+      {
+        question: "Co oznacza zwrot 'Gute Besserung'?",
+        options: ["Szybkiego powrotu do zdrowia", "Dobrego dnia", "Dobrej nocy", "Miłej podróży"],
+        answer: "Szybkiego powrotu do zdrowia"
+      },
+      {
+        question: "Jak powiedzieć 'Potrzebuję lekarza' po niemiecku?",
+        options: ["Ich brauche einen Arzt", "Ich habe einen Arzt", "Ich bin Arzt", "Ich gehe zum Arzt"],
+        answer: "Ich brauche einen Arzt"
+      },
+      {
+        question: "Jak zapytać 'Gdzie jest najbliższa apteka?' po niemiecku?",
+        options: ["Wo ist die nächste Apotheke?", "Wo ist das Krankenhaus?", "Wo kann ich helfen?", "Was kostet das?"],
+        answer: "Wo ist die nächste Apotheke?"
+      },
+      {
+        question: "Co oznacza 'Ich habe Schmerzen im Rücken'?",
+        options: ["Boli mnie plecy", "Mam katar", "Jestem zmęczony", "Mam gorączkę"],
+        answer: "Boli mnie plecy"
+      },
+      {
+        question: "Jak zapytać 'Czy możesz mi pomóc?' po niemiecku?",
+        options: ["Kannst du mir helfen?", "Magst du mich?", "Willst du gehen?", "Hast du Zeit?"],
+        answer: "Kannst du mir helfen?"
+      },
+      {
+        question: "Jak powiedzieć 'Nie rozumiem' po niemiecku?",
+        options: ["Ich verstehe nicht", "Ich weiß nicht", "Ich habe keine Zeit", "Ich bin müde"],
+        answer: "Ich verstehe nicht"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const homeBtn = document.getElementById("homeBtn");
+
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffleOptions([...q.options]);
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, correctAnswer) {
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+      if (btn.textContent === correctAnswer) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          loadQuestion();
+        } else {
+          showFinalScreen();
+        }
+      }, 800);
+    }
+
+    function showFinalScreen() {
+      questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${questions.length}`;
+      optionsEl.innerHTML = "";
+      homeBtn.classList.remove("hidden");
+
+      if (score === questions.length) {
+        const fireStreak = parseInt(localStorage.getItem("fireStreak") || "0") + 1;
+        localStorage.setItem("fireStreak", fireStreak);
+      } else {
+        localStorage.setItem("fireStreak", "0");
+      }
+    }
+
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuizoBabcia - Start</title>
+  <!-- Link do pliku CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Rozmyte tło -->
+  <div id="blurredBackground"></div>
+
+  <!-- Napis z logo i licznik -->
+  <div class="corner">
+    <div class="gradient-text">QuizoBabcia</div>
+    <div class="fire-counter">
+      <img src="firepass.png" alt="Ogień">
+      <span id="fireCount">0</span>
+    </div>
+  </div>
+
+  <!-- Przyciski: Start, Poradnik i Strzałka w lewo -->
+  <div class="container">
+    <button id="startBtn">Start</button>
+    <button id="helpBtn">Poradnik</button>
+    <!-- Dodano okrągły przycisk z niebieską strzałką -->
+    <a href="głowna.html" class="arrow-left" aria-label="Powrót do strony głównej">
+      &#8592;
+    </a>
+  </div>
+
+  <!-- Modal wyboru kategorii -->
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <h2>Wybierz kategorię</h2>
+      <button onclick="location.href='kulinarne.html'">Kulinarne</button>
+      <button onclick="location.href='senior.html'">Senior</button>
+      <button onclick="location.href='przydatne.html'">Przydatne</button>
+    </div>
+  </div>
+
+  <!-- Overlay poradnika -->
+  <div id="helpOverlay">
+    <div id="helpContent">
+<h2>==Poradnik QuizoBabcia==</h2>
+<p><strong>Poziomy: Łatwy, trudny</strong></p>
+<p><strong>Łatwy:</strong> Na rozgrzewkę, jest 10 pytań które się ciągle powtarzają.</p>
+<p><strong>Trudny:</strong> Jest 10 pytań, które również się powtarzają, ale są trudniejsze.</p>
+<h2>==Co to quizobabcia?==</h2>
+<p>Quizobabcia to tak zwany "Quiz" (czytaj kłiz), czyli pytania z różnych kategorii – geografia, matematyka, angielski. Oparty na uczeniu się niemieckiego dla babci Joli. 😊</p>
+<h2>==Zasady==</h2>
+<p>Wybieraj poprawne odpowiedzi strzałkami (góra i dół). Jeżeli obramówka opcji wyboru jest zielona, zaznaczyłeś dobrze. Jeśli czerwona – źle.</p>
+<p>Zwycięska passa to licznik twoich wszystkich wygranych z rzędu we wszystkich kategoriach. Wygrana jest wtedy, kiedy uzyskasz 10/10.</p>
+<p><strong>Dobrej zabawy życzy Aleks 😊</strong> <br> 12.04.2025</p>
+
+      <button id="closeHelp">Zamknij</button>
+    </div>
+  </div>
+
+  <script>
+    // Pobieranie liczby wygranych z localStorage
+    const fireCounterElement = document.getElementById("fireCount");
+    const fireStreak = localStorage.getItem("fireStreak") || 0; // Domyślnie 0
+    fireCounterElement.textContent = fireStreak;
+
+    // Obsługa przycisku "Poradnik"
+    const helpBtn = document.getElementById("helpBtn");
+    const helpOverlay = document.getElementById("helpOverlay");
+    const closeHelp = document.getElementById("closeHelp");
+
+    helpBtn.addEventListener("click", () => {
+      helpOverlay.style.display = "flex";
+      helpOverlay.style.animation = "fadeIn 0.5s ease";
+    });
+
+    closeHelp.addEventListener("click", () => {
+      helpOverlay.style.animation = "fadeOut 0.5s ease";
+      setTimeout(() => {
+        helpOverlay.style.display = "none";
+      }, 500); // Utrzymanie animacji fadeOut
+    });
+
+    // Obsługa przycisku "Start" i otwieranie modalu kategorii
+    const startBtn = document.getElementById("startBtn");
+    const categoryModal = document.getElementById("categoryModal");
+
+    startBtn.addEventListener("click", () => {
+      categoryModal.style.display = "flex"; // Pokazuje modal kategorii
+    });
+
+    // Zamknięcie modalu przy kliknięciu poza treścią
+    categoryModal.addEventListener("click", (e) => {
+      if (e.target === categoryModal) {
+        categoryModal.style.display = "none"; // Ukrywa modal
+      }
+    });
+  </script>
+</body>
+</html>

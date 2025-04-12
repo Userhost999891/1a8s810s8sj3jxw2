@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuizoBabcia - Poziomy</title>
+  <style>
+    /* Reset i podstawowe style */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://static.vecteezy.com/system/resources/previews/020/580/320/original/landscape-cartoon-scene-green-field-with-bush-on-hill-and-summer-clear-blue-sky-with-blank-space-for-background-and-design-element-vector.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Kontener przycisków */
+    .button-container {
+      text-align: center;
+    }
+
+    /* Zielony przycisk Łatwy */
+    .easy-button {
+      padding: 20px 50px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.4s, box-shadow 0.4s, background-color 0.4s;
+    }
+
+    .easy-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(0, 200, 83, 0.7);
+      background-color: #009624;
+    }
+
+    /* Czerwony przycisk Trudny */
+    .hard-button {
+      padding: 20px 50px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #d50000;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.4s, box-shadow 0.4s, background-color 0.4s;
+      margin-top: 20px;
+    }
+
+    .hard-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(213, 0, 0, 0.7);
+      background-color: #b71c1c;
+    }
+
+    /* Styl dla napisu pod przyciskami */
+    .difficulty-text {
+      margin-top: 40px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="button-container">
+    <!-- Zielony przycisk Łatwy -->
+    <button class="easy-button" onclick="location.href='index.html'">Łatwy</button>
+    <!-- Czerwony przycisk Trudny -->
+    <button class="hard-button" onclick="location.href='indextrudny.html'">Trudny</button>
+    <!-- Tekst pod przyciskami -->
+    <div class="difficulty-text">Wybierz poziom trudności</div>
+  </div>
+</body>
+</html>
