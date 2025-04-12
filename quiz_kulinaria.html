@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Kulinarne - QuizoBabcia</title>
+  <style>
+    /* Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .next-btn, .end-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .next-btn:hover, .end-btn:hover {
+      background-color: #009624;
+    }
+    .hidden { display: none; }
+    .review-option {
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f4f4f4;
+    }
+    .correct {
+      background-color: #00c853;
+      color: #fff;
+    }
+    .incorrect {
+      background-color: #f44336;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tytuł -->
+  <div class="gradient-text" style="text-align: center; margin-top: 10px;">QuizoBabcia</div>
+
+  <div class="quiz-container">
+    <div id="question" class="question">Pobieranie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="nextBtn" class="next-btn hidden">Następne pytanie</button>
+    <button id="endBtn" class="end-btn hidden">Zakończ Quiz</button>
+  </div>
+
+  <script>
+    // Pytania kulinarne
+    const questions = [
+      { question: "Jak przetłumaczyć 'chleb' na niemiecki?", options: ["Käse", "Wasser", "Fleisch", "Brot"], answer: "Brot" },
+      { question: "Jak powiedzieć 'masło' po niemiecku?", options: ["Butter", "Margarine", "Sahne", "Käse"], answer: "Butter" },
+      { question: "Jak przetłumaczyć 'mleko' na niemiecki?", options: ["Wasser", "Kaffee", "Milch", "Saft"], answer: "Milch" },
+      { question: "Jak powiedzieć 'jajko' po niemiecku?", options: ["Fisch", "Huhn", "Käse", "Ei"], answer: "Ei" },
+      { question: "Jak przetłumaczyć 'ser' na niemiecki?", options: ["Wurst", "Milch", "Butter", "Käse"], answer: "Käse" },
+      { question: "Jak powiedzieć 'ryba' po niemiecku?", options: ["Gemüse", "Fisch", "Obst", "Fleisch"], answer: "Fisch" },
+      { question: "Jak przetłumaczyć 'mięso' na niemiecki?", options: ["Milch", "Gemüse", "Obst", "Fleisch"], answer: "Fleisch" },
+      { question: "Jak powiedzieć 'pomidor' po niemiecku?", options: ["Paprika", "Tomate", "Zwiebel", "Gurke"], answer: "Tomate" },
+      { question: "Jak przetłumaczyć 'cukier' na niemiecki?", options: ["Zucker", "Salz", "Honig", "Pfeffer"], answer: "Zucker" },
+      { question: "Jak powiedzieć 'sól' po niemiecku?", options: ["Salz", "Pfeffer", "Zucker", "Kräuter"], answer: "Salz" }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const endBtn = document.getElementById("endBtn");
+
+    // Funkcja do losowania odpowiedzi
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function loadQuestion() {
+      nextBtn.classList.add("hidden");
+      endBtn.classList.add("hidden");
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffleOptions([...q.options]);
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, correctAnswer) {
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+      if (btn.textContent === correctAnswer) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+      nextBtn.classList.remove("hidden");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${questions.length}`;
+        optionsEl.innerHTML = "";
+        nextBtn.classList.add("hidden");
+        endBtn.classList.remove("hidden");
+      }
+    });
+
+    endBtn.addEventListener("click", () => {
+      if (score === 10) {
+        const fireStreak = parseInt(localStorage.getItem("fireStreak") || "0") + 1;
+        localStorage.setItem("fireStreak", fireStreak);
+      } else {
+        localStorage.setItem("fireStreak", "0");
+      }
+      window.location.href = "index.html";
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
