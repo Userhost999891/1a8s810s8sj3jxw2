@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Senior - QuizoBabcia</title>
+  <style>
+    /* Style wspólne */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    .gradient-text {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00c853, #b2ff59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border: 2px solid #00c853;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+    .next-btn, .end-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #00c853;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .next-btn:hover, .end-btn:hover {
+      background-color: #009624;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <!-- Nagłówek -->
+  <div class="gradient-text">QuizoBabcia</div>
+
+  <div class="quiz-container">
+    <div id="question" class="question">Pobieranie pytania...</div>
+    <div id="options" class="options"></div>
+    <button id="nextBtn" class="next-btn hidden">Następne pytanie</button>
+    <button id="endBtn" class="end-btn hidden">Zakończ Quiz</button>
+  </div>
+
+  <script>
+    // Pytania dla quizu seniora
+    const questions = [
+      { question: "Jak powiedzieć 'dzień dobry' po niemiecku?", options: ["Guten Morgen", "Guten Abend", "Auf Wiedersehen", "Danke"], answer: "Guten Morgen" },
+      { question: "Jak przetłumaczyć 'do widzenia' na niemiecki?", options: ["Hallo", "Tschüss", "Bitte", "Guten Tag"], answer: "Tschüss" },
+      { question: "Jak powiedzieć 'dziadek' po niemiecku?", options: ["Opa", "Großvater", "Onkel", "Vater"], answer: "Opa" },
+      { question: "Jak powiedzieć 'babcia' po niemiecku?", options: ["Oma", "Großmutter", "Mutter", "Tante"], answer: "Oma" },
+      { question: "Jak powiedzieć 'kocham cię' po niemiecku?", options: ["Ich liebe dich", "Ich mag dich", "Du bist schön", "Danke"], answer: "Ich liebe dich" },
+      { question: "Jak powiedzieć 'jak się masz?' po niemiecku?", options: ["Wie geht es dir?", "Wo bist du?", "Was machst du?", "Wie heißt du?"], answer: "Wie geht es dir?" },
+      { question: "Jak powiedzieć 'miło cię poznać' po niemiecku?", options: ["Freut mich, dich kennenzulernen", "Schön, dich zu sehen", "Tschüss", "Auf Wiedersehen"], answer: "Freut mich, dich kennenzulernen" },
+      { question: "Jak powiedzieć 'gdzie mieszkasz?' po niemiecku?", options: ["Wo wohnst du?", "Wie alt bist du?", "Was machst du?", "Woher kommst du?"], answer: "Wo wohnst du?" },
+      { question: "Jak powiedzieć 'jak masz na imię?' po niemiecku?", options: ["Wie heißt du?", "Wie geht es dir?", "Wo wohnst du?", "Was machst du?"], answer: "Wie heißt du?" },
+      { question: "Jak powiedzieć 'czy wszystko w porządku?' po niemiecku?", options: ["Ist alles in Ordnung?", "Wie geht es dir?", "Wo wohnst du?", "Wie alt bist du?"], answer: "Ist alles in Ordnung?" }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const endBtn = document.getElementById("endBtn");
+
+    // Funkcja losująca odpowiedzi
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function loadQuestion() {
+      nextBtn.classList.add("hidden");
+      endBtn.classList.add("hidden");
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffleOptions([...q.options]);
+      shuffledOptions.forEach(option => {
+        const btn = document.createElement("div");
+        btn.textContent = option;
+        btn.className = "option";
+        btn.addEventListener("click", () => selectOption(btn, q.answer));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, correctAnswer) {
+      Array.from(document.getElementsByClassName("option")).forEach(option => {
+        option.style.pointerEvents = "none";
+      });
+      if (btn.textContent === correctAnswer) {
+        score++;
+        btn.style.borderColor = "#00c853";
+      } else {
+        btn.style.borderColor = "red";
+      }
+      nextBtn.classList.remove("hidden");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        questionEl.textContent = `Koniec quizu! Twój wynik to: ${score} z ${questions.length}`;
+        optionsEl.innerHTML = "";
+        nextBtn.classList.add("hidden");
+        endBtn.classList.remove("hidden");
+      }
+    });
+
+    endBtn.addEventListener("click", () => {
+      if (score === 10) {
+        const fireStreak = parseInt(localStorage.getItem("fireStreak") || "0") + 1;
+        localStorage.setItem("fireStreak", fireStreak);
+      } else {
+        localStorage.setItem("fireStreak", "0");
+      }
+      window.location.href = "index.html";
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
